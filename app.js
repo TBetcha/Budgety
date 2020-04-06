@@ -1,6 +1,6 @@
 var budgetController = (function () {
 
-    //some code
+
 })();
 
 
