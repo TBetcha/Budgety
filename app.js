@@ -107,7 +107,8 @@ var UIController = (function () {
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     };
 
     return {
@@ -124,7 +125,7 @@ var UIController = (function () {
             if (type === 'inc') {
                 element = DOMstrings.incomeContainer;
 
-                html = '<div class="item clearfix" id="income-%id%"><div' +
+                html = '<div class="item clearfix" id="inc-%id%"><div' +
                     ' class="item__description">%description%</div><div' +
                     ' class="right' +
                     ' clearfix"><div class="item__value">+' +
@@ -133,7 +134,7 @@ var UIController = (function () {
             } else if (type === 'exp') {
                 element = DOMstrings.expensesContainer;
 
-                html = '<div class="item clearfix" id="expense-%id%"><div' +
+                html = '<div class="item clearfix" id="exp-%id%"><div' +
                     ' class="item__description">%description%</div><div' +
                     ' class="right clearfix"><div class="item__value">-' +
                     ' %value%</div><div' +
@@ -199,6 +200,8 @@ var controller = (function (budgetController, UIController) {
                 ctrlAddItem();
             }
         });
+
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     };
 
     var updateBudget = function () {
@@ -233,6 +236,28 @@ var controller = (function (budgetController, UIController) {
 
             //5. calculate and update budget
             updateBudget();
+
+        }
+
+    };
+
+    var ctrlDeleteItem = function (event) {
+        var itemID, splitID, type, ID;
+
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if (itemID) {
+
+            //inc-1
+            splitID = itemID.split('--');
+            type = splitID[0];
+            ID = splitID[1];
+
+            // 1. Delete item from data structure
+
+            //2. Delete item from UI
+
+            //3.Update ans show the new budget
 
         }
 
