@@ -20,9 +20,11 @@ var budgetController = (function () {
         data.totals[type] = sum;
     };
 
+/*
     var allExpenses = [];
     var allIncome = [];
     var totalExpenses = 0;
+*/
 
     var data = {
         allItems: {
@@ -39,7 +41,7 @@ var budgetController = (function () {
 
     return {
         addItem: function (type, des, val) {
-            var newItem;
+            var newItem, ID;
 
             //create new ID
             if (data.allItems[type].length > 0) {
@@ -59,6 +61,22 @@ var budgetController = (function () {
             //return new item
             return newItem;
         },
+
+        deleteItem: function (type, id) {
+            var ids, index;
+
+            ids = data.allItems[type].map(function (current) {
+                return current.id;
+            });
+
+            index = ids.indexOf(id);
+
+            if (index !== -1) {
+                data.allItems[type].splice(index, 1);
+                //starts removing at first param and removes second param number of items
+            }
+        },
+
         calculateBudget: function () {
 
             //calculate total income and expenses
@@ -187,10 +205,10 @@ var UIController = (function () {
 
 
 //GLOBAL APP CONTROLLER
-var controller = (function (budgetController, UIController) {
+var controller = (function (budgetCtrl, UICtrl) {
 
     var setUpEventListeners = function () {
-        var DOM = UIController.getDOMstrings();
+        var DOM = UICtrl.getDOMstrings();
         document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
 
         document.addEventListener('keypress', function (event) {
@@ -206,13 +224,13 @@ var controller = (function (budgetController, UIController) {
 
     var updateBudget = function () {
         //1. Calculate the budget
-        budgetController.calculateBudget();
+        budgetCtrl.calculateBudget();
 
         //2. return budget (since we return something have to store it somewhere, duh)
-        var budget = budgetController.getBudget();
+        var budget = budgetCtrl.getBudget();
 
         //3. Display the budget
-        UIController.displayBudget(budget);
+        UICtrl.displayBudget(budget);
 
     };
 
@@ -220,16 +238,16 @@ var controller = (function (budgetController, UIController) {
         var input, newItem;
 
         //1. Get the field input data
-        input = UIController.getinput();
+        input = UICtrl.getinput();
         console.log(input);
 
         if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
 
             //2. Add the item to the budget controller
-            newItem = budgetController.addItem(input.type, input.description, input.value);
+            newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
             //3. Add the item to the UI
-            UIController.addListItem(newItem, input.type);
+            UICtrl.addListItem(newItem, input.type);
 
             //4. clear the fields
             UIController.clearFields();
@@ -249,12 +267,12 @@ var controller = (function (budgetController, UIController) {
         if (itemID) {
 
             //inc-1
-            splitID = itemID.split('--');
+            splitID = itemID.split('-');
             type = splitID[0];
-            ID = splitID[1];
+            ID = parseInt(splitID[1]);
 
             // 1. Delete item from data structure
-
+            budgetCtrl.deleteItem(type, ID);
             //2. Delete item from UI
 
             //3.Update ans show the new budget
@@ -266,7 +284,7 @@ var controller = (function (budgetController, UIController) {
     return {
         init: function () {
             console.log('Application has started');
-            UIController.displayBudget({
+            UICtrl.displayBudget({
                 budget: 0,
                 totalInc: 0,
                 totalExp: 0,
@@ -274,7 +292,7 @@ var controller = (function (budgetController, UIController) {
             });
             setUpEventListeners();
         }
-    }
+    };
 
 })(budgetController,UIController);
 
